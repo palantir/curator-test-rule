@@ -186,11 +186,11 @@ public final class ZooKeeperRule extends ExternalResource {
             portReferenceCounts.remove(port);
 
             if (portReferenceCounts.count(port) == 0) {
-                ServerCnxnFactory server = servers.remove(port);
+                ServerCnxnFactory cnxnFactory = servers.remove(port);
 
                 LOGGER.info("Closing ZooKeeper server at port {}", port);
 
-                server.shutdown();
+                cnxnFactory.shutdown();
             }
         }
     }
