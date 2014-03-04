@@ -1,0 +1,13 @@
+apply plugin: 'java'
+apply plugin: 'eclipse'
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    compile "org.apache.curator:curator-framework:2.4.0"
+    compile "junit:junit:4.11"
+    compile "com.google.guava:guava:16.0.1"
+}
+
