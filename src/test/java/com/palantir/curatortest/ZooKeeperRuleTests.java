@@ -19,10 +19,10 @@ import org.junit.Test;
 public final class ZooKeeperRuleTests {
 
     @Rule
-    public final ZooKeeperRule zooKeeperRule = new ZooKeeperRule();
+    public final ZooKeeperRule zooKeeperRule = new ZooKeeperRule("namespace1", 9500, new DefaultZooKeeperServerWrapper());
 
     @Rule
-    public final ZooKeeperRule zooKeeperRule2 = new ZooKeeperRule();
+    public final ZooKeeperRule zooKeeperRule2 = new ZooKeeperRule("namespace1", 9500, new DefaultZooKeeperServerWrapper());
 
     @Test
     public void testCreateData() throws Exception {

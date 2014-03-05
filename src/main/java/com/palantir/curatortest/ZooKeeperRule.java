@@ -4,8 +4,6 @@ package com.palantir.curatortest;
  * Copyright 2013 Palantir Technologies, Inc. All rights reserved.
  */
 
-import java.io.IOException;
-import java.net.InetSocketAddress;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -15,9 +13,6 @@ import org.apache.curator.framework.CuratorFramework;
 import org.apache.curator.framework.CuratorFrameworkFactory;
 import org.apache.curator.framework.imps.CuratorFrameworkState;
 import org.apache.curator.retry.ExponentialBackoffRetry;
-import org.apache.zookeeper.server.ServerCnxnFactory;
-import org.apache.zookeeper.server.ZooKeeperServer;
-import org.apache.zookeeper.server.persistence.FileTxnSnapLog;
 import org.junit.rules.ExternalResource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,7 +22,6 @@ import com.google.common.collect.HashMultiset;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Multiset;
-import com.google.common.io.Files;
 
 /**
  * JUnit rule to create a zookeeper server and to create curator instances to
@@ -67,23 +61,16 @@ public final class ZooKeeperRule extends ExternalResource {
 
     private final int port;
     private final String namespace;
+    protected final ZooKeeperServerWrapper serverWrapper;
 
     public ZooKeeperRule() {
-        this(generateRandomNamespace(), getPort());
-    }
-
-    public ZooKeeperRule(String namespace) {
-        this(namespace, getPort());
-    }
-
-    public ZooKeeperRule(int port) {
-        this(generateRandomNamespace(), port);
+        this(generateRandomNamespace(), getPort(), new DefaultZooKeeperServerWrapper());
     }
 
     /**
      * Creates a zookeeper rule that sets up a server.
      */
-    public ZooKeeperRule(String namespace, int port) {
+    public ZooKeeperRule(String namespace, int port, ZooKeeperServerWrapper serverWrapper) {
         Preconditions.checkNotNull(namespace);
 
         if (port <= 0) {
@@ -92,6 +79,7 @@ public final class ZooKeeperRule extends ExternalResource {
 
         this.port = port;
         this.namespace = namespace;
+        this.serverWrapper = serverWrapper;
     }
 
     public CuratorFramework getClient() {
@@ -121,12 +109,12 @@ public final class ZooKeeperRule extends ExternalResource {
 
     @Override
     protected void before() {
-        SHARED_SERVER_MANAGER.startServer(port);
+        SHARED_SERVER_MANAGER.startServer(this.serverWrapper, port);
     }
 
     @Override
     protected void after() {
-        SHARED_SERVER_MANAGER.closeServer(port);
+        SHARED_SERVER_MANAGER.shutdownServer(port);
 
         for (CuratorFramework client : curatorClients) {
             if (client.getState() == CuratorFrameworkState.STARTED) {
@@ -135,46 +123,26 @@ public final class ZooKeeperRule extends ExternalResource {
         }
     }
 
-    private static String generateRandomNamespace() {
-        return UUID.randomUUID().toString(); // TODO Check
+    public static String generateRandomNamespace() {
+        return UUID.randomUUID().toString();
     }
 
-    private static int getPort() {
+    public static int getPort() {
         return Integer.getInteger(PORT_SYSTEM_PROPERTY_NAME, DEFAULT_PORT);
     }
 
     private static final class SharedServerManager {
         private final Multiset<Integer> portReferenceCounts = HashMultiset.create();
-        private final Map<Integer, ServerCnxnFactory> servers = Maps.newHashMap();
+        private final Map<Integer, ZooKeeperServerWrapper> servers = Maps.newHashMap();
 
-        private synchronized void startServer(int port) {
+        private synchronized void startServer(ZooKeeperServerWrapper serverWrapper, int port) {
             int prevCount = portReferenceCounts.count(port);
 
             if (prevCount == 0) {
                 LOGGER.info("Starting new ZooKeeper server at port {}", port);
 
-                ZooKeeperServer zkServer = new NoJMXZooKeeperServer();
-
-                FileTxnSnapLog ftxn;
-                try {
-                    ftxn = new FileTxnSnapLog(Files.createTempDir(), Files.createTempDir());
-                } catch (IOException e) {
-                    throw new RuntimeException(e);
-                }
-                zkServer.setTxnLogFactory(ftxn);
-
-                ServerCnxnFactory cnxnFactory;
-                try {
-                    cnxnFactory = ServerCnxnFactory.createFactory();
-                    cnxnFactory.configure(new InetSocketAddress(port), cnxnFactory.getMaxClientCnxnsPerHost());
-                    cnxnFactory.startup(zkServer);
-                } catch (IOException e) {
-                    throw new RuntimeException(e);
-                } catch (InterruptedException e) {
-                    throw new RuntimeException(e);
-                }
-
-                servers.put(port, cnxnFactory);
+                serverWrapper.startServer(port);
+                servers.put(port, serverWrapper);
             } else {
                 LOGGER.info("Using existing ZooKeeper server at port {}", port);
             }
@@ -182,15 +150,15 @@ public final class ZooKeeperRule extends ExternalResource {
             portReferenceCounts.add(port);
         }
 
-        private synchronized void closeServer(int port) {
+        private synchronized void shutdownServer(int port) {
             portReferenceCounts.remove(port);
 
             if (portReferenceCounts.count(port) == 0) {
-                ServerCnxnFactory cnxnFactory = servers.remove(port);
+                ZooKeeperServerWrapper serverWrapper = servers.remove(port);
 
                 LOGGER.info("Closing ZooKeeper server at port {}", port);
 
-                cnxnFactory.shutdown();
+                serverWrapper.shutdownServer();
             }
         }
     }
