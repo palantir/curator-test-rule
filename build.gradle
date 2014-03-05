@@ -1,5 +1,5 @@
-apply plugin: 'java'
 apply plugin: 'eclipse'
+apply plugin: 'java'
 
 repositories {
     mavenCentral()
@@ -14,7 +14,7 @@ dependencies {
     compile "com.google.guava:guava:16.0.1"
     compile "org.slf4j:slf4j-api:1.7.6"
 
-    runtime "org.codehaus.groovy:groovy-all:2.1.6"
-    runtime "ch.qos.logback:logback-classic:1.0.13"
+    testRuntime "org.codehaus.groovy:groovy-all:2.1.6"
+    testRuntime "ch.qos.logback:logback-classic:1.0.13"
 }
 

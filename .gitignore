@@ -9,5 +9,5 @@
 .settings
 .project
 
-bin/
-build/
+/bin
+/build
