@@ -1,4 +1,4 @@
-package com.palantir.curatortest;
+package com.palantir.curatortestrule;
 
 /*
  * Copyright 2013 Palantir Technologies, Inc. All rights reserved.

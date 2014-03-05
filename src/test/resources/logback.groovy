@@ -8,5 +8,5 @@ appender("STDOUT", ConsoleAppender) {
         pattern = "%d{HH:mm:ss.SSS} [%thread] %-5level %logger{50} - %msg%n"
     }
 }
-logger("com.palantir.curatortest", DEBUG)
+logger("com.palantir.curatortestrule", DEBUG)
 root(ERROR, ["STDOUT"])
