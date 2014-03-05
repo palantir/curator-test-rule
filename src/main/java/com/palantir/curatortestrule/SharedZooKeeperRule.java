@@ -31,9 +31,18 @@ import com.google.common.collect.Multiset;
  */
 public final class SharedZooKeeperRule extends ZooKeeperRule {
 
+
     private static final Logger LOGGER = LoggerFactory.getLogger(SharedZooKeeperRule.class);
 
     private static final SharedServerManager SHARED_SERVER_MANAGER = new SharedServerManager();
+
+    public SharedZooKeeperRule() {
+        super();
+    }
+
+    public SharedZooKeeperRule(String namespace, int port, ZooKeeperServerWrapper serverWrapper) {
+        super(namespace, port, serverWrapper);
+    }
 
     @Override
     protected void before() {

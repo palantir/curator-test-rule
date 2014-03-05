@@ -18,6 +18,14 @@ public final class LocalZooKeeperRule extends ZooKeeperRule {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(LocalZooKeeperRule.class);
 
+    public LocalZooKeeperRule() {
+        super();
+    }
+
+    public LocalZooKeeperRule(String namespace, int port, ZooKeeperServerWrapper serverWrapper) {
+        super(namespace, port, serverWrapper);
+    }
+
     @Override
     protected void before() {
         super.before();
