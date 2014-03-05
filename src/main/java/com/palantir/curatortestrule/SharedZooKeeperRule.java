@@ -1,11 +1,12 @@
-package com.palantir.curatortestrule;
-
 /*
- * Copyright 2013 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2014 Palantir Technologies, Inc. All rights reserved.
  */
+
+package com.palantir.curatortestrule;
 
 import java.util.Map;
 
+import org.junit.runners.model.Statement;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -16,17 +17,15 @@ import com.google.common.collect.Multiset;
 /**
  * A {@link ZooKeeperRule} that shares servers based on port numbers.
  * <p>
- * If the server on that port has not been created by a
- * {@link SharedZooKeeperRule}, then a new server will be started. If another
- * {@link SharedZooKeeperRule} is using that same port at the same time (during
- * concurrent execution), then that same server will be connected to. A
- * {@link ZooKeeperServerWrapper} started by this class will be closed after
- * execution of the JUnit {@link Statement} only if it is the last
- * {@link SharedZooKeeperRule} that references it.
+ * If the server on that port has not been created by a {@link SharedZooKeeperRule}, then a new
+ * server will be started. If another {@link SharedZooKeeperRule} is using that same port at the
+ * same time (during concurrent execution), then that same server will be connected to. A
+ * {@link ZooKeeperServerWrapper} started by this class will be closed after execution of the JUnit
+ * {@link Statement} only if it is the last {@link SharedZooKeeperRule} that references it.
  * <p>
- * WARNING: Since {@link ZooKeeperServerWrapper} instances are shared, behavior
- * is undefined if two different {@link SharedZooKeeperRule}s share a server on
- * the same port while expecting different {@link ZooKeeperServerWrapper} implementations.
+ * WARNING: Since {@link ZooKeeperServerWrapper} instances are shared, behavior is undefined if two
+ * different {@link SharedZooKeeperRule}s share a server on the same port while expecting different
+ * {@link ZooKeeperServerWrapper} implementations.
  *
  * @author juang
  */

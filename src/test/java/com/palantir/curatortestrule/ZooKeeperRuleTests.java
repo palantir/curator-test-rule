@@ -1,8 +1,8 @@
-package com.palantir.curatortestrule;
-
 /*
- * Copyright 2013 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2014 Palantir Technologies, Inc. All rights reserved.
  */
+
+package com.palantir.curatortestrule;
 
 import static org.junit.Assert.assertArrayEquals;
 import static org.junit.Assert.assertNull;

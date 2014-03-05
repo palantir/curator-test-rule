@@ -1,8 +1,8 @@
-package com.palantir.curatortestrule;
-
 /*
  * Copyright 2014 Palantir Technologies, Inc. All rights reserved.
  */
+
+package com.palantir.curatortestrule;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
@@ -15,8 +15,7 @@ import com.google.common.io.Files;
 
 /**
  * Default implementation of {@link ZooKeeperServerWrapper} which uses a
- * {@link NoJMXZooKeeperServer} and uses temp directories for the
- * {@link FileTxnSnapLog}.
+ * {@link NoJMXZooKeeperServer} and uses temp directories for the {@link FileTxnSnapLog}.
  *
  * @author juang
  */

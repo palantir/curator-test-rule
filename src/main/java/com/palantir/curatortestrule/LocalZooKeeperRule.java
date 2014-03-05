@@ -1,18 +1,16 @@
-package com.palantir.curatortestrule;
-
 /*
- * Copyright 2013 Palantir Technologies, Inc. All rights reserved.
+ * Copyright 2014 Palantir Technologies, Inc. All rights reserved.
  */
+
+package com.palantir.curatortestrule;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * A simple {@link ZooKeeperRule} that starts the {@link ZooKeeperServerWrapper}
- * on the port before running the statement, and shutdowns the
- * {@link ZooKeeperServerWrapper} after the statement.
- *
- * TODO Figure out what happens when an exception is thrown in {@link #before()}.
+ * A simple {@link ZooKeeperRule} that starts the {@link ZooKeeperServerWrapper} on the port before
+ * running the statement, and shutdowns the {@link ZooKeeperServerWrapper} after the statement. TODO
+ * Figure out what happens when an exception is thrown in {@link #before()}.
  *
  * @author juang
  */

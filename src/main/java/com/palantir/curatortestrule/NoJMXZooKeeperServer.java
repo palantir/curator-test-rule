@@ -1,14 +1,14 @@
-package com.palantir.curatortestrule;
-
 /*
  * Copyright 2014 Palantir Technologies, Inc. All rights reserved.
  */
+
+package com.palantir.curatortestrule;
 
 import org.apache.zookeeper.server.ZooKeeperServer;
 
 /**
  * A subclass of {@link ZooKeeperServer} that skips JMX related operations.
- * 
+ *
  * @author juang
  */
 public final class NoJMXZooKeeperServer extends ZooKeeperServer {
