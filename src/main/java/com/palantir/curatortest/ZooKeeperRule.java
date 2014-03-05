@@ -5,7 +5,6 @@ package com.palantir.curatortest;
  */
 
 import java.util.List;
-import java.util.Map;
 import java.util.UUID;
 
 import org.apache.curator.RetryPolicy;
@@ -18,34 +17,25 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.common.base.Preconditions;
-import com.google.common.collect.HashMultiset;
 import com.google.common.collect.Lists;
-import com.google.common.collect.Maps;
-import com.google.common.collect.Multiset;
 
 /**
  * JUnit rule to create a zookeeper server and to create curator instances to
  * connect to the zookeeper server. The zookeeper server will be started before
  * the {@link Statement} that the rule wraps, and closed after the
- * {@link Statement} runs (read below for caveats when the same port is used for
- * multiple tests running concurrently).
+ * {@link Statement} runs (read the javadoc for the concrete subclasses for
+ * caveats when running multiple tests concurrently).
  * <p>
- * An open port must be specified when creating the {@link ZooKeeperRule}. If
- * the server on that port has not been created by a {@link ZooKeeperRule}, then
- * a new server will be started. If another {@link ZooKeeperRule} is using that
- * same port at the same time (during concurrent execution), then that same
- * server will be connected to. A {@link NoJMXZooKeeperServer} started by this
- * class will be closed after execution of the JUnit {@link Statement} only if
- * it is the last {@link ZooKeeperRule} that references it.
+ * An open port must be specified when creating the {@link ZooKeeperRule}.
  * <p>
  * A namespace is used so that in the case that multiple tests are using the
  * same {@link NoJMXZooKeeperServer}, their operations on the server won't
  * collide. If a namespace is not provided, then a random namespace will be
  * used, NOT the root namespace.
- * 
+ *
  * @author juang
  */
-public final class ZooKeeperRule extends ExternalResource {
+public abstract class ZooKeeperRule extends ExternalResource {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(ZooKeeperRule.class);
 
@@ -56,11 +46,10 @@ public final class ZooKeeperRule extends ExternalResource {
     private static final int DEFAULT_PORT = 9500;
     private static final String PORT_SYSTEM_PROPERTY_NAME = "zookeeper.test.port";
 
-    private static final SharedServerManager SHARED_SERVER_MANAGER = new SharedServerManager();
     private final List<CuratorFramework> curatorClients = Lists.newCopyOnWriteArrayList();
 
-    private final int port;
-    private final String namespace;
+    protected final int port;
+    protected final String namespace;
     protected final ZooKeeperServerWrapper serverWrapper;
 
     public ZooKeeperRule() {
@@ -76,6 +65,9 @@ public final class ZooKeeperRule extends ExternalResource {
         if (port <= 0) {
             throw new RuntimeException("Port number must be positive");
         }
+
+        String format = "Creating ZooKeeperRule with namespace: {},  port: {}, and serverWrapper: {}";
+        LOGGER.debug(format, namespace, port, serverWrapper.getClass().getName());
 
         this.port = port;
         this.namespace = namespace;
@@ -109,12 +101,12 @@ public final class ZooKeeperRule extends ExternalResource {
 
     @Override
     protected void before() {
-        SHARED_SERVER_MANAGER.startServer(this.serverWrapper, port);
+        // do nothing
     }
 
     @Override
     protected void after() {
-        SHARED_SERVER_MANAGER.shutdownServer(port);
+        LOGGER.debug("Closing {} curator clients", curatorClients.size());
 
         for (CuratorFramework client : curatorClients) {
             if (client.getState() == CuratorFrameworkState.STARTED) {
@@ -129,37 +121,5 @@ public final class ZooKeeperRule extends ExternalResource {
 
     public static int getPort() {
         return Integer.getInteger(PORT_SYSTEM_PROPERTY_NAME, DEFAULT_PORT);
-    }
-
-    private static final class SharedServerManager {
-        private final Multiset<Integer> portReferenceCounts = HashMultiset.create();
-        private final Map<Integer, ZooKeeperServerWrapper> servers = Maps.newHashMap();
-
-        private synchronized void startServer(ZooKeeperServerWrapper serverWrapper, int port) {
-            int prevCount = portReferenceCounts.count(port);
-
-            if (prevCount == 0) {
-                LOGGER.info("Starting new ZooKeeper server at port {}", port);
-
-                serverWrapper.startServer(port);
-                servers.put(port, serverWrapper);
-            } else {
-                LOGGER.info("Using existing ZooKeeper server at port {}", port);
-            }
-
-            portReferenceCounts.add(port);
-        }
-
-        private synchronized void shutdownServer(int port) {
-            portReferenceCounts.remove(port);
-
-            if (portReferenceCounts.count(port) == 0) {
-                ZooKeeperServerWrapper serverWrapper = servers.remove(port);
-
-                LOGGER.info("Closing ZooKeeper server at port {}", port);
-
-                serverWrapper.shutdownServer();
-            }
-        }
     }
 }

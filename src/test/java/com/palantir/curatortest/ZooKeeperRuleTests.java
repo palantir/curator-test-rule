@@ -13,16 +13,16 @@ import org.junit.Test;
 
 /**
  * Tests for {@link ZooKeeperRule}.
- * 
+ *
  * @author juang
  */
 public final class ZooKeeperRuleTests {
 
     @Rule
-    public final ZooKeeperRule zooKeeperRule = new ZooKeeperRule("namespace1", 9500, new DefaultZooKeeperServerWrapper());
+    public final ZooKeeperRule zooKeeperRule = new SharedZooKeeperRule();
 
     @Rule
-    public final ZooKeeperRule zooKeeperRule2 = new ZooKeeperRule("namespace1", 9500, new DefaultZooKeeperServerWrapper());
+    public final ZooKeeperRule zooKeeperRule2 = new SharedZooKeeperRule();
 
     @Test
     public void testCreateData() throws Exception {
