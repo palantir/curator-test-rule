@@ -6,7 +6,6 @@
 *.ear
 .gradle
 .classpath
-.settings
 .project
 
 /bin
