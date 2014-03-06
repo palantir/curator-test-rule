@@ -13,6 +13,7 @@ import org.apache.curator.framework.CuratorFrameworkFactory;
 import org.apache.curator.framework.CuratorFrameworkFactory.Builder;
 import org.apache.curator.framework.imps.CuratorFrameworkState;
 import org.apache.curator.retry.ExponentialBackoffRetry;
+import org.apache.zookeeper.server.ServerCnxnFactory;
 import org.junit.rules.ExternalResource;
 import org.junit.runners.model.Statement;
 import org.slf4j.Logger;
@@ -29,9 +30,9 @@ import com.google.common.collect.Lists;
  * <p>
  * An open port must be specified when creating the {@link ZooKeeperRule}.
  * <p>
- * A namespace is used so that in the case that multiple tests are using the same
- * {@link NoJMXZooKeeperServer}, their operations on the server won't collide. If a namespace is not
- * provided, then a random namespace will be used, NOT the root namespace.
+ * A namespace is used so that in the case that multiple tests are using the same zookeeper server,
+ * their operations on the server won't collide. If a namespace is not provided, then a random
+ * namespace will be used, NOT the root namespace.
  *
  * @author juang
  */
@@ -49,28 +50,28 @@ public abstract class ZooKeeperRule extends ExternalResource {
 
     protected final int port;
     protected final String namespace;
-    protected final ZooKeeperServerWrapper serverWrapper;
+    protected final ZooKeeperRuleConfig ruleConfig;
 
     public ZooKeeperRule() {
-        this(generateRandomNamespace(), getPort(), new DefaultZooKeeperServerWrapper());
+        this(generateRandomNamespace(), getDefaultPort(), new DefaultZooKeeperRuleConfig());
     }
 
     /**
      * Creates a zookeeper rule that sets up a server.
      */
-    public ZooKeeperRule(String namespace, int port, ZooKeeperServerWrapper serverWrapper) {
+    public ZooKeeperRule(String namespace, int port, ZooKeeperRuleConfig ruleConfig) {
         Preconditions.checkNotNull(namespace);
 
-        if (port <= 0) {
+        if (port < 0) {
             throw new RuntimeException("Port number must be positive");
         }
 
-        String format = "Creating ZooKeeperRule with namespace: {},  port: {}, and serverWrapper: {}";
-        LOGGER.debug(format, namespace, port, serverWrapper.getClass().getName());
+        String format = "Creating ZooKeeperRule with namespace: {},  port: {}, and ruleConfig: {}";
+        LOGGER.debug(format, namespace, port, ruleConfig.getClass().getName());
 
         this.port = port;
         this.namespace = namespace;
-        this.serverWrapper = serverWrapper;
+        this.ruleConfig = ruleConfig;
     }
 
     public CuratorFramework getClient() {
@@ -84,17 +85,20 @@ public abstract class ZooKeeperRule extends ExternalResource {
      */
     public CuratorFramework getClient(RetryPolicy retryPolicy) {
         CuratorFrameworkFactory.Builder builder = CuratorFrameworkFactory.builder();
-        builder = builder.connectString("127.0.0.1:" + port);
+        builder = builder.connectString("127.0.0.1:" + getCnxnFactory().getLocalPort());
         builder = builder.retryPolicy(retryPolicy);
         builder = builder.namespace(this.namespace);
 
         CuratorFramework client = builder.build();
+
         client.start();
 
         curatorClients.add(client);
 
         return client;
     }
+
+    protected abstract ServerCnxnFactory getCnxnFactory();
 
     @Override
     protected void before() {
@@ -116,7 +120,7 @@ public abstract class ZooKeeperRule extends ExternalResource {
         return UUID.randomUUID().toString();
     }
 
-    public static int getPort() {
+    public static int getDefaultPort() {
         return Integer.getInteger(PORT_SYSTEM_PROPERTY_NAME, DEFAULT_PORT);
     }
 }

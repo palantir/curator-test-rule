@@ -14,17 +14,15 @@ import org.apache.zookeeper.server.persistence.FileTxnSnapLog;
 import com.google.common.io.Files;
 
 /**
- * Default implementation of {@link ZooKeeperServerWrapper} which uses a
+ * Default implementation of {@link ZooKeeperRuleConfig} which uses a
  * {@link NoJMXZooKeeperServer} and uses temp directories for the {@link FileTxnSnapLog}.
  *
  * @author juang
  */
-public final class DefaultZooKeeperServerWrapper implements ZooKeeperServerWrapper {
-
-    private ServerCnxnFactory cnxnFactory;
+public final class DefaultZooKeeperRuleConfig implements ZooKeeperRuleConfig {
 
     @Override
-    public void startServer(int port) {
+    public ServerCnxnFactory getServer(int port) {
         ZooKeeperServer zkServer = new NoJMXZooKeeperServer();
 
         FileTxnSnapLog ftxn;
@@ -36,23 +34,14 @@ public final class DefaultZooKeeperServerWrapper implements ZooKeeperServerWrapp
         zkServer.setTxnLogFactory(ftxn);
 
         try {
-            this.cnxnFactory = ServerCnxnFactory.createFactory();
-            this.cnxnFactory.configure(new InetSocketAddress(port), cnxnFactory.getMaxClientCnxnsPerHost());
-            this.cnxnFactory.startup(zkServer);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        } catch (InterruptedException e) {
+            ServerCnxnFactory cnxnFactory = ServerCnxnFactory.createFactory();
+            cnxnFactory.configure(new InetSocketAddress(port), cnxnFactory.getMaxClientCnxnsPerHost());
+            cnxnFactory.startup(zkServer);
+
+            return cnxnFactory;
+        } catch (IOException | InterruptedException e) {
             throw new RuntimeException(e);
         }
-    }
-
-    @Override
-    public void shutdownServer() {
-        if (this.cnxnFactory == null) {
-            throw new IllegalStateException();
-        }
-
-        this.cnxnFactory.shutdown();
     }
 
 }
