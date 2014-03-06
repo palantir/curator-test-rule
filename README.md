@@ -1,2 +1,2 @@
-curator-test
-============
+curator-test-rule
+=================
