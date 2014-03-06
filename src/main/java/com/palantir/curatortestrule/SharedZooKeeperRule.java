@@ -57,7 +57,7 @@ public final class SharedZooKeeperRule extends ZooKeeperRule {
     protected void before() {
         super.before();
 
-        this.cnxnFactory = SHARED_SERVER_MANAGER.startServer(this.ruleConfig, port);
+        this.cnxnFactory = SHARED_SERVER_MANAGER.acquireServer(this.ruleConfig, port);
     }
 
     @Override
@@ -67,7 +67,7 @@ public final class SharedZooKeeperRule extends ZooKeeperRule {
         if (this.cnxnFactory != null) {
             LOGGER.debug("Closing ZooKeeper server at port {}", this.cnxnFactory.getLocalPort());
 
-            SHARED_SERVER_MANAGER.shutdownServer(port);
+            SHARED_SERVER_MANAGER.releaseServer(port);
         } else {
             LOGGER.debug("Cannot close ZooKeeper server. It is likely that it had trouble starting.");
         }
@@ -86,7 +86,7 @@ public final class SharedZooKeeperRule extends ZooKeeperRule {
         private final Multiset<Integer> portReferenceCounts = HashMultiset.create();
         private final Map<Integer, ServerCnxnFactory> servers = Maps.newHashMap();
 
-        private synchronized ServerCnxnFactory startServer(ZooKeeperRuleConfig ruleConfig, int port) {
+        private synchronized ServerCnxnFactory acquireServer(ZooKeeperRuleConfig ruleConfig, int port) {
             int prevCount = portReferenceCounts.count(port);
 
             if (prevCount == 0) {
@@ -110,7 +110,7 @@ public final class SharedZooKeeperRule extends ZooKeeperRule {
             return servers.get(port);
         }
 
-        private synchronized void shutdownServer(int port) {
+        private synchronized void releaseServer(int port) {
             portReferenceCounts.remove(port);
 
             if (portReferenceCounts.count(port) == 0) {
