@@ -32,6 +32,6 @@ public final class LocalZooKeeperRuleExample {
 ```
 
 
-There are two subclasses of `ZooKeeperRule` as of now: `LocalZooKeeperRule` and `SharedZooKeeperRule`. `LocalZooKeeperRule` starts and closes the underlying server based on the scope of the `TestingRule`. `SharedZooKeeperRule` also does this for serial execution. For concurrent execution (such as by using a `ParallelSuite`), all `SharedZooKeeperRule`s using the same port will share the same underlying server.
+There are two subclasses of `ZooKeeperRule` as of now: `LocalZooKeeperRule` and `SharedZooKeeperRule`. `LocalZooKeeperRule` starts and closes the underlying server based on the scope of the `TestRule`. `SharedZooKeeperRule` also does this for serial execution. For concurrent execution (such as by using a `ParallelSuite`), all `SharedZooKeeperRule`s using the same port will share the same underlying server.
 
 Please read the Javadocs for `LocalZooKeeperRule` and `SharedZooKeeperRule` for some caveats regarding these classes.
