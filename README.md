@@ -14,19 +14,22 @@ Why didn't we use [`curator-test`](https://curator.apache.org/curator-test/)
 
 How to use it
 -----------------
-    public final class LocalZooKeeperRuleExample {
 
-        @Rule                                                  // or @ClassRule
-        public ZooKeeperRule rule1 = new LocalZooKeeperRule(); // or SharedZooKeeperRule()
+```java
+public final class LocalZooKeeperRuleExample {
 
-        @Test
-        public void testCase() {
-            CuratorFramework client = rule1.getClient();
-            client.getState();
+    @Rule                                                  // or @ClassRule
+    public ZooKeeperRule rule1 = new LocalZooKeeperRule(); // or SharedZooKeeperRule()
 
-            // do something
-        }
+    @Test
+    public void testCase() {
+        CuratorFramework client = rule1.getClient();
+        client.getState();
+
+        // do something
     }
+}
+```
 
 
 There are two subclasses of `ZooKeeperRule` as of now: `LocalZooKeeperRule` and `SharedZooKeeperRule`. `LocalZooKeeperRule` starts and closes the underlying server based on the scope of the `TestingRule`. `SharedZooKeeperRule` also does this for serial execution. For concurrent execution (such as by using a `ParallelSuite`), all `SharedZooKeeperRule`s using the same port will share the same underlying server.
