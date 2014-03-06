@@ -10,6 +10,8 @@ import org.apache.zookeeper.server.ServerCnxnFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.common.base.Preconditions;
+
 /**
  * A simple {@link ZooKeeperRule} that gets a {@link ServerCnxnFactory} from
  * {@link ZooKeeperRuleConfig} on the port before running the statement, and shutdowns the
@@ -67,9 +69,7 @@ public final class LocalZooKeeperRule extends ZooKeeperRule {
 
     @Override
     protected ServerCnxnFactory getCnxnFactory() {
-        if (this.cnxnFactory == null) {
-            throw new IllegalStateException();
-        }
+        Preconditions.checkState(this.cnxnFactory != null);
 
         return this.cnxnFactory;
     }

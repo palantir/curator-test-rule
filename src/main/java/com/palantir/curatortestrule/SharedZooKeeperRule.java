@@ -13,6 +13,7 @@ import org.junit.runners.model.Statement;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.common.base.Preconditions;
 import com.google.common.collect.HashMultiset;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Multiset;
@@ -75,9 +76,7 @@ public final class SharedZooKeeperRule extends ZooKeeperRule {
 
     @Override
     protected ServerCnxnFactory getCnxnFactory() {
-        if (this.cnxnFactory == null) {
-            throw new IllegalStateException();
-        }
+        Preconditions.checkState(this.cnxnFactory != null);
 
         return cnxnFactory;
     }
