@@ -4,6 +4,8 @@
 
 package com.palantir.curatortestrule;
 
+import javax.annotation.CheckForNull;
+
 import org.apache.zookeeper.server.ServerCnxnFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,6 +26,7 @@ public final class LocalZooKeeperRule extends ZooKeeperRule {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(LocalZooKeeperRule.class);
 
+    @CheckForNull
     private ServerCnxnFactory cnxnFactory;
 
     public LocalZooKeeperRule() {

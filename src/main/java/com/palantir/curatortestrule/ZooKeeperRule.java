@@ -61,6 +61,7 @@ public abstract class ZooKeeperRule extends ExternalResource {
      */
     public ZooKeeperRule(String namespace, int port, ZooKeeperRuleConfig ruleConfig) {
         Preconditions.checkNotNull(namespace);
+        Preconditions.checkNotNull(ruleConfig);
 
         if (port < 0) {
             throw new RuntimeException("Port number must be positive");

@@ -6,6 +6,8 @@ package com.palantir.curatortestrule;
 
 import java.util.Map;
 
+import javax.annotation.CheckForNull;
+
 import org.apache.zookeeper.server.ServerCnxnFactory;
 import org.junit.runners.model.Statement;
 import org.slf4j.Logger;
@@ -40,6 +42,7 @@ public final class SharedZooKeeperRule extends ZooKeeperRule {
 
     private static final SharedServerManager SHARED_SERVER_MANAGER = new SharedServerManager();
 
+    @CheckForNull
     private ServerCnxnFactory cnxnFactory;
 
     public SharedZooKeeperRule() {
