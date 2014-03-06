@@ -62,8 +62,6 @@ public final class SharedZooKeeperRule extends ZooKeeperRule {
 
     @Override
     protected void after() {
-        super.after();
-
         if (this.cnxnFactory != null) {
             LOGGER.debug("Closing ZooKeeper server at port {}", this.cnxnFactory.getLocalPort());
 
@@ -71,6 +69,8 @@ public final class SharedZooKeeperRule extends ZooKeeperRule {
         } else {
             LOGGER.debug("Cannot close ZooKeeper server. It is likely that it had trouble starting.");
         }
+
+        super.after();
     }
 
     @Override
