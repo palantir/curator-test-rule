@@ -24,6 +24,7 @@ import org.apache.zookeeper.server.ZooKeeperServer;
 import org.apache.zookeeper.server.persistence.FileTxnSnapLog;
 
 import com.google.common.io.Files;
+{asdf}
 
 /**
  * Default implementation of {@link ZooKeeperRuleConfig} which uses a
