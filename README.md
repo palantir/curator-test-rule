@@ -1,4 +1,4 @@
-curator-test-rule
+curator-test-rule [![Build Status](https://travis-ci.org/palantir/curator-test-rule.png?branch=master)](https://travis-ci.org/palantir/curator-test-rule)
 =================
 
 Summary
