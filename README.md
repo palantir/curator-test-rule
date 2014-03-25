@@ -36,6 +36,10 @@ There are two subclasses of `ZooKeeperRule` as of now: `LocalZooKeeperRule` and 
 
 Please read the Javadocs for `LocalZooKeeperRule` and `SharedZooKeeperRule` for some caveats regarding these classes.
 
+Javadoc
+-----------------
+The javadoc is at [http://palantir.github.io/curator-test-rule/javadoc/](http://palantir.github.io/curator-test-rule/javadoc/). It is highly recommended to read the javadoc for some caveats when using `curator-test-rule`.
+
 License
 -----------------
 See LICENSE.txt
