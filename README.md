@@ -12,6 +12,37 @@ Why didn't we use [`curator-test`](https://curator.apache.org/curator-test/)
 * The underlying `ZooKeeperServer` timeout cannot be configured since we are locked into the configurations in `InstanceSpec`
 * Because of a blocking `cnxnFactory.join()` call in `ZooKeeperServerMain#runFromConfig`, `curator-test` had to do several hacks like spawning a new thread and synchronizing on the status of the `ZooKeeperServer`
 
+Installation
+-----------------
+Include `curator-test-rule` as a dependency in your build system
+
+###In Gradle
+```gradle
+...
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    compile "com.palantir:curator-test-rule:0.0.1-pre"
+}
+...
+```
+
+###In Maven
+```xml
+  ...
+  <dependencies>
+    <dependency>
+      <groupId>com.palantir</groupId>
+      <artifactId>curator-test-rule</artifactId>
+      <version>0.0.1-pre</version>
+      <scope>compile</scope>
+    </dependency>
+  </dependencies>
+  ...
+```
+
 How to use it
 -----------------
 
