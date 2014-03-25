@@ -1,5 +1,10 @@
 apply plugin: 'eclipse'
 apply plugin: 'java'
+apply plugin: 'maven'
+apply plugin: 'signing'
+
+version = "0.0.1-pre"
+group = "com.palantir"
 
 repositories {
     mavenCentral()
@@ -19,3 +24,62 @@ dependencies {
     testRuntime "ch.qos.logback:logback-classic:1.0.13"
 }
 
+task javadocJar(type:Jar, dependsOn: javadoc){
+    from 'build/docs/javadoc'
+    classifier = 'javadoc'
+}
+
+task sourcesJar(type:Jar){
+    from sourceSets.main.allSource
+    classifier = 'sources'
+}
+
+artifacts {
+    archives jar
+    archives javadocJar
+    archives sourcesJar
+}
+
+signing {
+    sign configurations.archives
+}
+
+uploadArchives {
+    repositories {
+        mavenDeployer {
+            beforeDeployment { MavenDeployment deployment -> signing.signPom(deployment) }
+
+            repository(url: "https://oss.sonatype.org/service/local/staging/deploy/maven2/") {
+              authentication(userName: sonatypeUsername, password: sonatypePassword)
+            }
+
+            pom.project {
+               name 'curator-test-rule'
+               packaging 'jar'
+               description 'This project provides a JUnit TestRule that manages the startup and shutdown of the underlying ZooKeeperServer. The TestRule also includes a way of getting CuratorFramework instances that automatically connect and disconnect from the underlying ZooKeeperServer based on the scope of rule.'
+               url 'https://github.com/palantir/curator-test-rule'
+
+               scm {
+                   url 'https://github.com/palantir/curator-test-rule'
+                   connection 'scm:git:git@github.com:palantir/curator-test-rule.git'
+                   developerConnection 'scm:git:git@github.com:palantir/curator-test-rule.git'
+               }
+
+               licenses {
+                   license {
+                       name 'The Apache Software License, Version 2.0'
+                       url 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+                       distribution 'repo'
+                   }
+               }
+
+               developers {
+                   developer {
+                       id 'justinuang'
+                       name 'Justin Uang'
+                   }
+               }
+           }
+        }
+    }
+}
