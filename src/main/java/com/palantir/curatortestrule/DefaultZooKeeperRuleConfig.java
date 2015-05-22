@@ -16,13 +16,19 @@
 
 package com.palantir.curatortestrule;
 
+import java.io.File;
 import java.io.IOException;
 import java.net.InetSocketAddress;
+import java.util.Set;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.zookeeper.server.ServerCnxnFactory;
 import org.apache.zookeeper.server.ZooKeeperServer;
 import org.apache.zookeeper.server.persistence.FileTxnSnapLog;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+import com.google.common.collect.Sets;
 import com.google.common.io.Files;
 
 /**
@@ -32,6 +38,18 @@ import com.google.common.io.Files;
  * @author juang
  */
 public final class DefaultZooKeeperRuleConfig implements ZooKeeperRuleConfig {
+    private static final Logger LOGGER = LoggerFactory.getLogger(LocalZooKeeperRule.class);
+
+    private final boolean cleanupOnExit;
+    private final Set<File> directoriesToCleanup = Sets.newConcurrentHashSet();
+
+    public DefaultZooKeeperRuleConfig() {
+        this(false);
+    }
+
+    public DefaultZooKeeperRuleConfig(boolean cleanupOnExit) {
+        this.cleanupOnExit = cleanupOnExit;
+    }
 
     @Override
     public ServerCnxnFactory getServer(int port) {
@@ -39,7 +57,13 @@ public final class DefaultZooKeeperRuleConfig implements ZooKeeperRuleConfig {
 
         FileTxnSnapLog ftxn;
         try {
-            ftxn = new FileTxnSnapLog(Files.createTempDir(), Files.createTempDir());
+            File dataDir = Files.createTempDir();
+            File snapDir = Files.createTempDir();
+            if (cleanupOnExit) {
+                directoriesToCleanup.add(dataDir);
+                directoriesToCleanup.add(snapDir);
+            }
+            ftxn = new FileTxnSnapLog(dataDir, snapDir);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -56,4 +80,14 @@ public final class DefaultZooKeeperRuleConfig implements ZooKeeperRuleConfig {
         }
     }
 
+    @Override
+    public void cleanup() {
+        for (File dir : directoriesToCleanup) {
+            try {
+                FileUtils.deleteDirectory(dir);
+            } catch (IOException e) {
+                LOGGER.warn("Attempted to cleanup " + dir.getAbsolutePath() + " but cleanup failed.", e);
+            }
+        }
+    }
 }
