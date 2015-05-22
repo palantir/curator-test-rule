@@ -30,4 +30,5 @@ public interface ZooKeeperRuleConfig {
 
     ServerCnxnFactory getServer(int port);
 
+    void cleanup();
 }
