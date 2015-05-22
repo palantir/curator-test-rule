@@ -44,6 +44,9 @@ signing {
     sign configurations.archives
 }
 
+def sonatypeUsername = System.getenv('sonatypeUsername')
+def sonatypePassword = System.getenv('sonatypePassword')
+
 uploadArchives {
     repositories {
         mavenDeployer {
