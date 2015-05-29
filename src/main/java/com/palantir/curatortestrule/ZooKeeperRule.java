@@ -127,6 +127,8 @@ public abstract class ZooKeeperRule extends ExternalResource {
                 client.close();
             }
         }
+
+        ruleConfig.cleanup();
     }
 
     public static String generateRandomNamespace() {
