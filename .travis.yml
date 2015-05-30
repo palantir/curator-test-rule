@@ -3,3 +3,5 @@ language: java
 notifications:
     email:
         - juang@palantir.com
+
+sudo: false
