@@ -44,6 +44,18 @@ artifacts {
     archives sourcesJar
 }
 
+javadoc {
+    options {
+        links 'http://curator.apache.org/apidocs/',
+              'http://docs.oracle.com/javase/8/docs/api/',
+              'http://junit.org/javadoc/latest/',
+
+              // the normal ZK docs omit several server-side classes,
+              // including ones we use
+              'http://people.apache.org/~larsgeorge/zookeeper-1075002/build/docs/dev-api/'
+    }
+}
+
 signing {
     required { gradle.taskGraph.hasTask(":uploadArchives") }
     sign configurations.archives
