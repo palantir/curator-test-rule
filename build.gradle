@@ -3,7 +3,7 @@ apply plugin: 'java'
 apply plugin: 'maven'
 apply plugin: 'signing'
 
-version = "0.0.1"
+version = "0.0.2"
 group = "com.palantir"
 
 sourceCompatibility = '1.7'
