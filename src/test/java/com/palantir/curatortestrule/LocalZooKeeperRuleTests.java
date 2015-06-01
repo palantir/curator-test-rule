@@ -41,7 +41,7 @@ public final class LocalZooKeeperRuleTests {
 
             CuratorFramework client = rule1.getClient();
 
-            String path = "testpath";
+            String path = "/testpath";
             byte[] data = new byte[] { 1 };
             try {
                 client.create().forPath(path, data);
