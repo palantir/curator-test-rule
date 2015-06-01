@@ -23,7 +23,7 @@ import org.apache.zookeeper.server.ZooKeeperServer;
  *
  * @author juang
  */
-public final class NoJMXZooKeeperServer extends ZooKeeperServer {
+final class NoJMXZooKeeperServer extends ZooKeeperServer {
 
     @Override
     protected void registerJMX() {
