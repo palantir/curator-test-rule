@@ -24,7 +24,7 @@ repositories {
 }
 
 dependencies {
-    compile "com.palantir:curator-test-rule:0.0.1-pre"
+    compile "com.palantir:curator-test-rule:CURRENT_VERSION"
 }
 ...
 ```
@@ -36,7 +36,7 @@ dependencies {
     <dependency>
       <groupId>com.palantir</groupId>
       <artifactId>curator-test-rule</artifactId>
-      <version>0.0.1-pre</version>
+      <version>CURRENT_VERSION</version>
       <scope>compile</scope>
     </dependency>
   </dependencies>
