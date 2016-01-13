@@ -75,6 +75,8 @@ public final class SharedZooKeeperRule extends ZooKeeperRule {
 
     @Override
     protected void after() {
+        super.closeClients();
+
         if (this.cnxnFactory != null) {
             LOGGER.debug("Closing ZooKeeper server at port {}", this.cnxnFactory.getLocalPort());
 
