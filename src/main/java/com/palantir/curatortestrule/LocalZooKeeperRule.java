@@ -67,22 +67,18 @@ public final class LocalZooKeeperRule extends ZooKeeperRule {
     }
 
     @Override
-    protected void after() {
+    protected void closeServer() {
         if (this.cnxnFactory != null) {
             LOGGER.debug("Closing ZooKeeper server at port {}", this.cnxnFactory.getLocalPort());
-
             this.cnxnFactory.shutdown();
         } else {
             LOGGER.debug("Cannot close ZooKeeper server. It is likely that it had trouble starting.");
         }
-
-        super.after();
     }
 
     @Override
     protected ServerCnxnFactory getCnxnFactory() {
         Preconditions.checkState(this.cnxnFactory != null);
-
         return this.cnxnFactory;
     }
 }

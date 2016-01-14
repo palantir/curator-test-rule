@@ -120,16 +120,21 @@ public abstract class ZooKeeperRule extends ExternalResource {
 
     @Override
     protected void after() {
-        LOGGER.debug("Closing {} curator clients", curatorClients.size());
+        closeClients();
+        closeServer();
+        ruleConfig.cleanup();
+    }
 
+    protected void closeClients() {
+        LOGGER.debug("Closing {} curator clients", curatorClients.size());
         for (CuratorFramework client : curatorClients) {
             if (client.getState() == CuratorFrameworkState.STARTED) {
                 client.close();
             }
         }
-
-        ruleConfig.cleanup();
     }
+
+    protected abstract void closeServer();
 
     public static String generateRandomNamespace() {
         return UUID.randomUUID().toString();
