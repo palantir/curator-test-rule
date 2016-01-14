@@ -120,6 +120,8 @@ public abstract class ZooKeeperRule extends ExternalResource {
 
     @Override
     protected void after() {
+        closeClients();
+        closeServer();
         ruleConfig.cleanup();
     }
 
@@ -131,6 +133,8 @@ public abstract class ZooKeeperRule extends ExternalResource {
             }
         }
     }
+
+    protected abstract void closeServer();
 
     public static String generateRandomNamespace() {
         return UUID.randomUUID().toString();
