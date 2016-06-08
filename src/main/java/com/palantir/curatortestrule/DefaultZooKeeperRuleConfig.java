@@ -72,8 +72,6 @@ public final class DefaultZooKeeperRuleConfig implements ZooKeeperRuleConfig {
         try {
             ServerCnxnFactory cnxnFactory = ServerCnxnFactory.createFactory();
             cnxnFactory.configure(new InetSocketAddress(port), cnxnFactory.getMaxClientCnxnsPerHost());
-            zkServer.setMaxSessionTimeout(10000);
-            zkServer.setMinSessionTimeout(6000);
             cnxnFactory.startup(zkServer);
 
             return cnxnFactory;

@@ -101,8 +101,6 @@ public abstract class ZooKeeperRule extends ExternalResource {
                 .connectString("127.0.0.1:" + getCnxnFactory().getLocalPort())
                 .retryPolicy(retryPolicy)
                 .namespace(this.namespace)
-                .sessionTimeoutMs(6000)
-                .connectionTimeoutMs(10000)
                 .build();
 
         client.start();
