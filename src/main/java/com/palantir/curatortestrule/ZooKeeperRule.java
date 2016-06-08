@@ -97,12 +97,11 @@ public abstract class ZooKeeperRule extends ExternalResource {
      * started, and will be closed automatically.
      */
     public CuratorFramework getClient(RetryPolicy retryPolicy) {
-        CuratorFrameworkFactory.Builder builder = CuratorFrameworkFactory.builder();
-        builder = builder.connectString("127.0.0.1:" + getCnxnFactory().getLocalPort());
-        builder = builder.retryPolicy(retryPolicy);
-        builder = builder.namespace(this.namespace);
-
-        CuratorFramework client = builder.build();
+        CuratorFramework client = CuratorFrameworkFactory.builder()
+                .connectString("127.0.0.1:" + getCnxnFactory().getLocalPort())
+                .retryPolicy(retryPolicy)
+                .namespace(this.namespace)
+                .build();
 
         client.start();
 
